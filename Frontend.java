@@ -61,12 +61,52 @@ public class Frontend {
          if(password.equals("")){
             password = "student";
          }
-         connect(userName, password, databaseName);  
+         connect(userName, password, databaseName); 
+         addUser();
+
+
          close();     
 
         java.util.Date today = new java.util.Date();
         System.out.println("\nProgram terminated @ " + today + "\n");
         System.exit(0);
+    }
+
+    /**
+     * used to add users to get all info needed to add a user to the db 
+     */
+    public void addUser(){
+      //Gather info from the user
+      System.out.print("Enter user type\nOptions: 1 -> professor\n 2 -> Student\n 3 -> public\nYour selection: ");
+      int user_type_ID = GetInput.readLineInt();
+      System.out.print("Enter your first name: ");
+      String first_name = GetInput.readLine();
+      System.out.print("Enter your last name: ");
+      String last_name = GetInput.readLine();
+      System.out.print("Enter your email: ");
+      String email = GetInput.readLine();
+      System.out.print("Enter deparmtent ID: "); //need to make it print out options
+      int department_ID = GetInput.readLineInt();
+      String major = null; 
+      String office_number = null; 
+      String office_hours = null;
+
+      if(user_type_ID == 1){ //if professor
+        System.out.print("Enter your office number: ");
+        office_number = GetInput.readLine();
+        System.out.print("Enter your office hours: ");
+        office_hours = GetInput.readLine();
+      } else if (user_type_ID == 2){ //if student
+        System.out.print("Enter your major: ");
+        major = GetInput.readLine();
+      }
+
+      System.out.print("Enter your password: ");
+      String password = GetInput.readLine();
+    
+
+      int ret = be.insertUser(user_type_ID, first_name, last_name, password, email, department_ID, major, office_number, office_hours);
+      System.out.println(ret + "row(s) affected.");
     }
     
     
