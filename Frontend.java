@@ -64,15 +64,38 @@ public class Frontend {
          }
          connect(userName, password, databaseName); 
          //addUser();
-         System.out.println(be.validateLogin("d", "test"));
-
-
+         //System.out.println(be.validateLogin("d", "test"));
+         login();
          close();     
 
         java.util.Date today = new java.util.Date();
         System.out.println("\nProgram terminated @ " + today + "\n");
         System.exit(0);
     }
+    
+    /**
+     * Used to log users in
+     */
+    public void login(){
+      String email = "a";
+      String password = "a";
+      int exit = 1; //for emergency stops? idk if we need this or not 
+      while(exit != 0){ //while the crendtials don't match
+         System.out.print("Do you wish to continue to login? (0 = no | 1 = yes): ");
+         exit = GetInput.readLineInt();
+         if( exit == 0) {System.out.println("Login menu exited.");return;}
+         System.out.print("Enter your email: ");
+         email = GetInput.readLine();
+         System.out.print("Enter your password: ");
+         password = GetInput.readLine();
+         if(be.validateLogin(email, password)){
+            System.out.println("Login Successful.");
+            exit = 0;
+         }
+      }
+      return;
+    }
+    
 
     /**
      * used to add users to get all info needed to add a user to the db 

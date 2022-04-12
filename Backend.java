@@ -105,21 +105,26 @@
        */
       public boolean validateLogin(String email, String password){
          String passToTest = hashPassword(password);
-         String result = "";
+         String result = null;
          try{
             //perform lookup for email
             PreparedStatement stmt = conn.prepareStatement("SELECT password FROM User WHERE email=?");
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
-            rs.next();
-            result = rs.getString(1);
-            
+            if(rs.next()){
+               result = rs.getString(1);
+            }
+    
          } catch(SQLException s){
             System.out.println("ERROR CONNECTING\n" + s);
          }
-         byte[] aByteArray = passToTest.getBytes();
-         byte[] bByteArray = result.getBytes();
-         return MessageDigest.isEqual(aByteArray, bByteArray);
+         if(result != null){
+            byte[] aByteArray = passToTest.getBytes();
+            byte[] bByteArray = result.getBytes();
+            return MessageDigest.isEqual(aByteArray, bByteArray);
+         } else {
+            return false;
+         }
       
       }
 
