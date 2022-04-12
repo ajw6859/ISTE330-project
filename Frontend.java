@@ -7,6 +7,7 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
 public class Frontend {
 
     public static Font myFontForOutput = new Font("Courier", Font.PLAIN, 32);
@@ -62,7 +63,8 @@ public class Frontend {
             password = "student";
          }
          connect(userName, password, databaseName); 
-         addUser();
+         //addUser();
+         System.out.println(be.validateLogin("d", "test"));
 
 
          close();     
@@ -77,7 +79,7 @@ public class Frontend {
      */
     public void addUser(){
       //Gather info from the user
-      System.out.print("Enter user type\nOptions: 1 -> professor\n 2 -> Student\n 3 -> public\nYour selection: ");
+      System.out.print("Enter user type\nOptions:\n1 -> professor\n2 -> Student\n3 -> public\nYour selection: ");
       int user_type_ID = GetInput.readLineInt();
       System.out.print("Enter your first name: ");
       String first_name = GetInput.readLine();
