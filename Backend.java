@@ -148,5 +148,43 @@
          return result;
       }
 
+   public int deleteUser(int user_ID) {
+      int numberOfRowsDeleted = 0;
+      JOptionPane.showMessageDialog(null, "Deleting a User", "In DataLayer",
+      JOptionPane.PLAIN_MESSAGE);
+      try {
+         PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where user_ID = ?");
+         stmt.setInt(1, user_ID);
+         numberOfRowsDeleted = stmt.executeUpdate();
+         
+         System.out.println("Records Deleted -> "+numberOfRowsDeleted+"<-");
+      }
+      
+      catch (SQLException sqle) {
+         System.out.println("ERROR IN METHOD deletePassenger()");
+         System.out.println("ERROR MESSAGE -> "+sqle);
+      }
+      return numberOfRowsDeleted;
+   }
+   
+   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, String) {
+      int numberOfRowsUpdated = 0;
+      JOptionPane.showMessageDialog(null, "Updating a Passenger", "In DataLayer",
+      JOptionPane.PLAIN_MESSAGE);
+      try {
+         PreparedStatement stmt = conn.prepareStatement("UPDATE passenger SET street = ? WHERE passengerID = ?");
+         stmt.setInt(2, passengerID);
+         stmt.setString(1, streetAddress);
+         numberOfRowsUpdated = stmt.executeUpdate();
+         
+         System.out.println("Records Updated -> "+numberOfRowsUpdated+"<-");
+      }
+      
+      catch (SQLException sqle) {
+         System.out.println("ERROR IN METHOD updatePassenger()");
+         System.out.println("ERROR MESSAGE -> "+sqle);
+      }
+      return numberOfRowsUpdated;
+   }
 
 }
