@@ -56,46 +56,142 @@ public class Frontend {
          //Get username and pass --> set to root + student when left blank
          userName = tfUser.getText();
          password = tfPassword.getText();
-         if(userName.equals("")){
+        if(userName.equals("")){
             userName = "root";
-         }
-         if(password.equals("")){
+        }
+        if(password.equals("")){
             password = "student";
-         }
-         connect(userName, password, databaseName); 
-         //addUser();
-         //System.out.println(be.validateLogin("d", "test"));
-         login();
-         close();     
+        }
+        connect(userName, password, databaseName);    
+        int type_ID = login(); //login operates as a loop
 
+        //main menu calls
+        if(type_ID == 1){ //is professor 
+          mainMenuProfessor();
+        } else if(type_ID == 2){ //is student
+          mainMenuStudent();
+        }
+
+        close(); // close the connection 
         java.util.Date today = new java.util.Date();
         System.out.println("\nProgram terminated @ " + today + "\n");
         System.exit(0);
+        
     }
     
     /**
      * Used to log users in
      */
-    public void login(){
+    public int login(){
       String email = "a";
       String password = "a";
+      int id = 0;
       int exit = 1; //for emergency stops? idk if we need this or not 
       while(exit != 0){ //while the crendtials don't match
-         System.out.print("Do you wish to continue to login? (0 = no | 1 = yes): ");
-         exit = GetInput.readLineInt();
-         if( exit == 0) {System.out.println("Login menu exited.");return;}
-         System.out.print("Enter your email: ");
-         email = GetInput.readLine();
+        System.out.print("Do you wish to continue to login? (0 = no | 1 = yes): ");
+        exit = GetInput.readLineInt();
+        System.out.print("Enter your email: ");
+        email = GetInput.readLine();
          System.out.print("Enter your password: ");
          password = GetInput.readLine();
          if(be.validateLogin(email, password)){
             System.out.println("Login Successful.");
+            id = be.getUserTypeID(email);//get the use type to return;
             exit = 0;
          }
       }
-      return;
+      return id;
     }
-    
+
+    /**
+     * Used to display options for students
+     */
+    public void mainMenuStudent(){
+      int opt = 0;
+      
+      while(opt != 5){
+        System.out.println("Student Main Menu <3\nOptions:\n1) Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
+        System.out.print("Selection: ");
+        opt = GetInput.readLineInt();
+        switch(opt){
+        case 1: 
+          System.out.println("You selected option 1.");
+          break;
+        case 2: 
+          System.out.println("You selected option 2.");
+          break;
+        case 3: 
+          System.out.println("You selected option 3.");
+          break;
+        case 4:
+          System.out.println("You selected option 4. Have a nice day!");
+          break;
+        default:
+          System.out.println("Default triggered");
+        }
+      }
+
+    }
+
+    /**
+     * Used to display options for professor
+     */
+    public void mainMenuProfessor(){
+      //mark as connected --> I think we may need to add another column into the db to mannage new vs old connections
+      int opt = 0;
+      
+      while(opt != 5){
+        System.out.println("Professor Main Menu <3\nOptions:\n1) Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
+        System.out.print("Selection: ");
+        opt = GetInput.readLineInt();
+        switch(opt){
+        case 1: 
+          System.out.println("You selected option 1: Add an Abstract.");
+          boolean ret = insertAbstract();
+          break;
+        case 2: 
+          System.out.println("You selected option 2.");
+          break;
+        case 3: 
+          System.out.println("You selected option 3.");
+          break;
+        case 4:
+          System.out.println("You selected option 4.");
+          break;
+        case 5:
+          System.out.println("You selected option 5. Have a nice day!");
+          break;
+        default:
+          System.out.println("Default triggered");
+        }
+      }
+
+    }
+
+    /**
+     * Allows a professor to upload an abstract
+     */
+    public boolean insertAbstract(){return true;}
+
+    /**
+     * Allows a professor to edit an existing abstract
+     */
+    public boolean updateAbstract(){return true;}
+
+    /**
+     * Allows a professor to delete an abstract
+     */
+    public boolean deleteAbstract(){return true;}
+
+    /**
+     * Allows a professor to view prospective matches
+     */
+    public void viewMatches(){}
+
+    /**
+     * Helper function to format data 
+     */
+    public void formatData(){}
 
     /**
      * used to add users to get all info needed to add a user to the db 
@@ -143,6 +239,9 @@ public class Frontend {
       if(connected) {System.out.println("Connection successful.");} else {System.out.println("Error connecting");}
     }
     
+    /**
+     * BE call to close the connection 
+     */
     public void close(){
       boolean closed = be.close();
       if(closed) {System.out.println("Connection successfully closed.");} else {System.out.println("Error closing connection");}
@@ -153,7 +252,7 @@ public class Frontend {
      * Main method
      */
     public static void main (String[] args){
-        Frontend fe = new Frontend();
+      Frontend fe = new Frontend(); //create gui to connect to the DB
 
     }
 

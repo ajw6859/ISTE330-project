@@ -128,5 +128,25 @@
       
       }
 
+      /**
+       * Gets the user type for a user that we already know exists 
+       */
+      public int getUserTypeID(String email){
+         int result = 0;
+         try{
+            //perform lookup for email
+            PreparedStatement stmt = conn.prepareStatement("SELECT user_type_ID FROM User WHERE email=?");
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+               result = rs.getInt(1);
+            }
+    
+         } catch(SQLException s){
+            System.out.println("ERROR CONNECTING\n" + s);
+         }
+         return result;
+      }
+
 
 }
