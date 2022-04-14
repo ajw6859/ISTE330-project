@@ -262,7 +262,20 @@ public class Frontend {
 
       int ret = be.deleteUser(user_type_ID);
       System.out.println(ret + "row(s) affected.");
-    }
+    } // end of remove user
+    
+    
+    public void updateUser() {
+    System.out.println("What is the major you want to change to?");
+    String major = GetInput.readLine();
+   
+    System.out.println("What is the email of the user you are changing the major of?");
+    String email = GetInput.readLine();
+   
+    be.updateUser(major, email); 
+
+    
+    } // end of update user
 
     /**
      * Used to make the BE call to establish a connection to the DB
