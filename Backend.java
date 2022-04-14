@@ -150,8 +150,6 @@
 
    public int deleteUser(int user_ID) {
       int numberOfRowsDeleted = 0;
-      JOptionPane.showMessageDialog(null, "Deleting a User", "In DataLayer",
-      JOptionPane.PLAIN_MESSAGE);
       try {
          PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where user_ID = ?");
          stmt.setInt(1, user_ID);
@@ -187,4 +185,27 @@
       return numberOfRowsUpdated;
    }
    */
+   
+      public int updateUser(String major, String user_type_ID) {
+      int records = 0;
+      
+      try {
+      PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE user_type_ID = ?"); 
+      stmt.setString(1, major);
+      stmt.setString(2, user_type_ID); 
+      records = stmt.executeUpdate();
+      } // end of try
+      
+       catch(SQLException sqle) {
+         System.out.println("Error --->" + sqle); 
+      } // end of sql exception 
+      
+      System.out.println("# of records affected -->" + records);
+      return records;
+      } // end of updateUser     
+
+   
+      
+   
+   
 }
