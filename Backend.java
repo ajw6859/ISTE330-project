@@ -186,13 +186,13 @@
    }
    */
    
-      public int updateUser(String major, String user_type_ID) {
+      public int updateUser(String major, String email) {
       int records = 0;
       
       try {
-      PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE user_type_ID = ?"); 
+      PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE email = ?"); 
       stmt.setString(1, major);
-      stmt.setString(2, user_type_ID); 
+      stmt.setString(2, email); 
       records = stmt.executeUpdate();
       } // end of try
       
