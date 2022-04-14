@@ -166,8 +166,8 @@
       }
       return numberOfRowsDeleted;
    }
-   
-   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, String) {
+   /*
+   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String of) {
       int numberOfRowsUpdated = 0;
       JOptionPane.showMessageDialog(null, "Updating a Passenger", "In DataLayer",
       JOptionPane.PLAIN_MESSAGE);
@@ -186,5 +186,5 @@
       }
       return numberOfRowsUpdated;
    }
-
+   */
 }
