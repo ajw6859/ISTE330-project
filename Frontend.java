@@ -7,22 +7,19 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;  // Import the File class
-import java.io.FileNotFoundException;  // Import this class to handle errors
-import java.util.Scanner; // Import the Scanner class to read text files
 
 public class Frontend {
 
     public static Font myFontForOutput = new Font("Courier", Font.PLAIN, 32);
     private String databaseName, userName, password; //can probably make these local
-    private Backend be;
+    private BackendUserDelete be;
 
     /**
      * Constructor initializes FE GUI and BE connection
      */
     public Frontend(){
         Scanner scanner = new Scanner(System.in);
-        be = new Backend(); //create the new backend instancex 
+        be = new BackendUserDelete(); //create the new backend instancex 
         JPanel databaseBox = new JPanel(new GridLayout(2,1));
         JLabel lblDatabase = new JLabel("Database name?");
         lblDatabase.setFont(myFontForOutput);
@@ -91,6 +88,8 @@ public class Frontend {
       int id = 0;
       int exit = 1; //for emergency stops? idk if we need this or not 
       while(exit != 0){ //while the crendtials don't match
+        System.out.print("Do you wish to continue to login? (0 = no | 1 = yes): ");
+        exit = GetInput.readLineInt();
         System.out.print("Enter your email: ");
         email = GetInput.readLine();
          System.out.print("Enter your password: ");
@@ -99,10 +98,7 @@ public class Frontend {
             System.out.println("Login Successful.");
             id = be.getUserTypeID(email);//get the use type to return;
             exit = 0;
-            break;
          }
-        System.out.print("Do you wish to continue to login? (0 = no | 1 = yes): ");
-        exit = GetInput.readLineInt();
       }
       return id;
     }
@@ -114,7 +110,7 @@ public class Frontend {
       int opt = 0;
       
       while(opt != 5){
-        System.out.println("Student Main Menu <3\nOptions:\n1)Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
+        System.out.println("Student Main Menu <3\nOptions:\n1) Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
@@ -134,13 +130,8 @@ public class Frontend {
           System.out.println("Default triggered");
         }
       }
+
     }
-
-    /**
-     * Allows a student to search
-     */
-    public void searchByKeyword(){ }
-
 
     /**
      * Used to display options for professor
@@ -180,70 +171,7 @@ public class Frontend {
     /**
      * Allows a professor to upload an abstract
      */
-    public boolean insertAbstract(){
-      try {
-        //get file path
-        String filepath = "";
-        System.out.print("Enter the direct path to the file: ");
-        filepath = GetInput.readLine();
-
-        //make file reader object 
-        File file = new File(filepath);
-        Scanner sc = new Scanner(file);
-        String data = ""; //tmp data
-        String title = "";
-        String abs = ""; //for the full abstract
-        String keywords = ""; //abstract without unnecessary words 
-        ArrayList<String> to_block = new ArrayList<String>();  // words we dont need to include 
-
-        boolean first = true; //used to mark first line for title
-        boolean second = true; //used to mark second line for authors 
-
-        ArrayList<String> authors = new ArrayList<String>();  // words we dont need to include 
-
-        
-        while(sc.hasNextLine()){
-          //read in each line at a time 
-          data = sc.nextLine();
-          //System.out.println(data);
-
-          //if first line split by "-", "by", and then commas
-          if(first){
-            title = data;
-            first = false;
-
-          } else if(second){
-            //split authors by comma 
-            String[] temp = data.split(","); //tmp storage for author names.... not rlly important YET
-            /*We can finish implementing this aspect of it after. There are a few 
-             * design quirks we need to figure out in terms of how we want to input 
-             * author information for the associative table.
-            */
-            second = false;
-
-          } else {
-            //split the given line via whitespace 
-            for (String word : data.split("\\s+")){
-              //System.out.println(word);
-              if(word.equals("****")){
-                first = true; second = true;
-              } else {
-                abs += word; 
-                abs += " ";
-              }
-            }
-          }
-          
-        }
-        System.out.println(title);
-        System.out.println(abs);
-      } catch (FileNotFoundException e) {
-        System.out.println("An error occurred.");
-        e.printStackTrace();
-      }
-      
-      return true;
-    }
+    public boolean insertAbstract(){return true;}
 
     /**
      * Allows a professor to edit an existing abstract
@@ -278,8 +206,6 @@ public class Frontend {
       String last_name = GetInput.readLine();
       System.out.print("Enter your email: ");
       String email = GetInput.readLine();
-      System.out.print("Enter your phone: ");
-      String phone = GetInput.readLine();
       System.out.print("Enter deparmtent ID: "); //need to make it print out options
       int department_ID = GetInput.readLineInt();
       String major = null; 
@@ -300,14 +226,15 @@ public class Frontend {
       String password = GetInput.readLine();
     
 
-      int ret = be.insertUser(user_type_ID, first_name, last_name, password, email, phone,department_ID, major, office_number, office_hours);
+      int ret = be.insertUser(user_type_ID, first_name, last_name, password, email, department_ID, major, office_number, office_hours);
       System.out.println(ret + "row(s) affected.");
     }
     
     public void removeUser(){
-      //Gather info from the user
+    
       System.out.print("Enter user type\nOptions:\n1 -> professor\n2 -> Student\n3 -> public\nYour selection: ");
       int user_type_ID = GetInput.readLineInt();
+      
       System.out.print("Enter your first name: ");
       String first_name = GetInput.readLine();
       System.out.print("Enter your last name: ");
@@ -320,12 +247,18 @@ public class Frontend {
       String office_number = null; 
       String office_hours = null;
 
+      //String userID;
       if(user_type_ID == 1){ //if professor
+      
         System.out.print("Enter your office number: ");
         office_number = GetInput.readLine();
         System.out.print("Enter your office hours: ");
         office_hours = GetInput.readLine();
+        
+        System.out.print("Enter the userID you want to delete: ");
+         int userID = GetInput.readLineInt();
       } else if (user_type_ID == 2){ //if student
+      
         System.out.print("Enter your major: ");
         major = GetInput.readLine();
       }
@@ -334,22 +267,9 @@ public class Frontend {
       String password = GetInput.readLine();
     
 
-      int ret = be.deleteUser(user_type_ID);
+      int ret = be.deleteUser(userID);
       System.out.println(ret + "row(s) affected.");
-    } // end of remove user
-    
-    
-    public void updateUser() {
-    System.out.println("What is the major you want to change to?");
-    String major = GetInput.readLine();
-   
-    System.out.println("What is the email of the user you are changing the major of?");
-    String email = GetInput.readLine();
-   
-    be.updateUser(major, email); 
-
-    
-    } // end of update user
+    }
 
     /**
      * Used to make the BE call to establish a connection to the DB

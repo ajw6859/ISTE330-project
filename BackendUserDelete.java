@@ -7,7 +7,7 @@
    import java.sql.*;
    import java.security.MessageDigest;
    import java.security.NoSuchAlgorithmException;
-   public class Backend {
+   public class BackendUserDelete {
 
       private Connection conn;
       private String url_string = "jdbc:mysql://localhost/";
@@ -16,7 +16,7 @@
       /**
        * Constructor --> shouldn't do anything here i don't think
        */
-      public Backend(){}
+      public BackendUserDelete(){}
        
       /**
         * Makes the connect to the DB
@@ -152,6 +152,7 @@
       int numberOfRowsDeleted = 0;
       //JOptionPane.showMessageDialog(null, "Deleting a User", "In DataLayer",
       //JOptionPane.PLAIN_MESSAGE);
+      System.out.println("Deleting a User");
       try {
          PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where user_ID = ?");
          stmt.setInt(1, user_ID);
@@ -167,7 +168,7 @@
       return numberOfRowsDeleted;
    }
    /*
-   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, String) {
+   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String of) {
       int numberOfRowsUpdated = 0;
       JOptionPane.showMessageDialog(null, "Updating a Passenger", "In DataLayer",
       JOptionPane.PLAIN_MESSAGE);
