@@ -1,4 +1,4 @@
-   /**
+     /**
     * ISTE 330 Group 1 project backend
     * This file is responsible for communicating with 
     * the database via MySQL and handling minor communciation 
@@ -48,21 +48,22 @@
          return true;
       }
 
-      public int insertUser(int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String office_number, String office_hours){
+      public int insertUser(int user_type_ID, String first_name, String last_name, String password, String email, String phone, int department_ID, String major, String office_number, String office_hours){
          //need to do a check to make sure emails arent duplicates
          int ret = 0;
          try {
             //Still need to implement password hashing 2
-            PreparedStatement stmt = conn.prepareStatement("Insert into User (user_type_ID, first_name, last_name, password, email, department_ID, major, office_number, office_hours) VALUES (?,?,?,?,?,?,?,?,?) ");
+            PreparedStatement stmt = conn.prepareStatement("Insert into User (user_type_ID, first_name, last_name, password, email, cell_phone, department_ID, major, office_number, office_hours) VALUES (?,?,?,?,?,?,?,?,?,?) ");
             stmt.setInt(1, user_type_ID);
             stmt.setString(2, first_name);
             stmt.setString(3, last_name);
             stmt.setString(4, hashPassword(password));
             stmt.setString(5, email);
-            stmt.setInt(6, department_ID);
-            stmt.setString(7, major);
-            stmt.setString(8, office_number);
-            stmt.setString(9, office_hours);
+            stmt.setString(6, phone);
+            stmt.setInt(7, department_ID);
+            stmt.setString(8, major);
+            stmt.setString(9, office_number);
+            stmt.setString(10, office_hours);
             ret = stmt.executeUpdate(); 
          } catch(SQLException s){
             System.out.println("ERROR CONNECTING\n" + s);
@@ -131,7 +132,7 @@
       /**
        * Gets the user type for a user that we already know exists 
        */
-      public int getUserTypeID(String email){
+      public int getUserTypeID(String email  ){
          int result = 0;
          try{
             //perform lookup for email
@@ -150,8 +151,6 @@
 
    public int deleteUser(int user_ID) {
       int numberOfRowsDeleted = 0;
-      //JOptionPane.showMessageDialog(null, "Deleting a User", "In DataLayer",
-      //JOptionPane.PLAIN_MESSAGE);
       try {
          PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where user_ID = ?");
          stmt.setInt(1, user_ID);
@@ -167,7 +166,7 @@
       return numberOfRowsDeleted;
    }
    /*
-   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, String) {
+   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String of) {
       int numberOfRowsUpdated = 0;
       JOptionPane.showMessageDialog(null, "Updating a Passenger", "In DataLayer",
       JOptionPane.PLAIN_MESSAGE);
@@ -187,4 +186,27 @@
       return numberOfRowsUpdated;
    }
    */
+   
+      public int updateUser(String major, String email) {
+      int records = 0;
+      
+      try {
+      PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE email = ?"); 
+      stmt.setString(1, major);
+      stmt.setString(2, email); 
+      records = stmt.executeUpdate();
+      } // end of try
+      
+       catch(SQLException sqle) {
+         System.out.println("Error --->" + sqle); 
+      } // end of sql exception 
+      
+      System.out.println("# of records affected -->" + records);
+      return records;
+      } // end of updateUser     
+
+   
+      
+   
+   
 }
