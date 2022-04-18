@@ -149,11 +149,11 @@
          return result;
       }
 
-   public int deleteUser(int user_ID) {
+   public int deleteUser(String email) {
       int numberOfRowsDeleted = 0;
       try {
-         PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where user_ID = ?");
-         stmt.setInt(1, user_ID);
+         PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where email = ?");
+         stmt.setString(1, email);
          numberOfRowsDeleted = stmt.executeUpdate();
          
          System.out.println("Records Deleted -> "+numberOfRowsDeleted+"<-");

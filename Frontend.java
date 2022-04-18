@@ -144,7 +144,9 @@ public class Frontend {
     /**
      * Allows a student to search
      */
-    public void searchByKeyword(){ }
+    public void searchByKeyword(){ 
+    
+    }
 
 
     /**
@@ -165,7 +167,7 @@ public class Frontend {
           break;
         case 2: 
           System.out.println("You selected option 2. Edit an Abstract");
-          boolean ret = 
+          //boolean ret = 
           break;
         case 3: 
           System.out.println("You selected option 3.");
@@ -250,11 +252,11 @@ public class Frontend {
       
       return true;
     }
-
+   /*
     public int editAbstract(){
       
     }
-
+   */
     /**
      * Allows a professor to edit an existing abstract
      */
@@ -318,34 +320,52 @@ public class Frontend {
       //Gather info from the user
       System.out.print("Enter user type\nOptions:\n1 -> professor\n2 -> Student\n3 -> public\nYour selection: ");
       int user_type_ID = GetInput.readLineInt();
+      /*
       System.out.print("Enter your first name: ");
       String first_name = GetInput.readLine();
       System.out.print("Enter your last name: ");
       String last_name = GetInput.readLine();
-      System.out.print("Enter your email: ");
+      */
+      System.out.print("Enter email of the user you want to delete: ");
       String email = GetInput.readLine();
+      /*
       System.out.print("Enter deparmtent ID: "); //need to make it print out options
       int department_ID = GetInput.readLineInt();
       String major = null; 
       String office_number = null; 
       String office_hours = null;
-
+      */
       if(user_type_ID == 1){ //if professor
+        /*
         System.out.print("Enter your office number: ");
         office_number = GetInput.readLine();
         System.out.print("Enter your office hours: ");
         office_hours = GetInput.readLine();
+        */
+        
+        /*
+        System.out.print("Do you want to delete a user?");
+        String confirmation = GetInput.readLine();
+        if (confirmation == "yes") {
+           
+        }
+        */
+        int ret = be.deleteUser(email);
+        System.out.println(ret + "row(s) affected.");
       } else if (user_type_ID == 2){ //if student
+        /*
         System.out.print("Enter your major: ");
         major = GetInput.readLine();
+        */
+        System.out.println("Student not allowed to delete user");
+        
       }
-
+      /*
       System.out.print("Enter your password: ");
       String password = GetInput.readLine();
-    
+      */
 
-      int ret = be.deleteUser(user_type_ID);
-      System.out.println(ret + "row(s) affected.");
+      
     } // end of remove user
     
     
