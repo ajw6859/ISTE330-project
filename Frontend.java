@@ -66,6 +66,10 @@ public class Frontend {
             password = "student";
         }
         connect(userName, password, databaseName);    
+        //add a professor and student user for testing purposes 
+        be.insertUser(1, "Jim", "Habermas", "test", "jim.habermas@rit.edu", "0000000000", 1, null, "GOL 2650", "M, W: 3-3:50"); //professor user
+        be.insertUser(2, "Allison", "Wright", "test", "ajw6859@rit.edu", "9782398944", 2, "CSEC", null, null); //student user
+
         int type_ID = login(); //login operates as a loop
 
         //main menu calls
@@ -95,9 +99,10 @@ public class Frontend {
         email = GetInput.readLine();
          System.out.print("Enter your password: ");
          password = GetInput.readLine();
+         System.out.println(be.validateLogin(email, password));
          if(be.validateLogin(email, password)){
             System.out.println("Login Successful.");
-            id = be.getUserTypeID(email);//get the use type to return;
+            id = be.getUserTypeID(email);//get the user type to return;
             exit = 0;
             break;
          }
@@ -159,7 +164,8 @@ public class Frontend {
           boolean ret = insertAbstract();
           break;
         case 2: 
-          System.out.println("You selected option 2.");
+          System.out.println("You selected option 2. Edit an Abstract");
+          boolean ret = 
           break;
         case 3: 
           System.out.println("You selected option 3.");
@@ -235,14 +241,18 @@ public class Frontend {
           }
           
         }
-        System.out.println(title);
-        System.out.println(abs);
+        //System.out.println(title);
+        //System.out.println(abs);
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
       }
       
       return true;
+    }
+
+    public int editAbstract(){
+      
     }
 
     /**
