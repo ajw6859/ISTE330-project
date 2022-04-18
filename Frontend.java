@@ -99,7 +99,6 @@ public class Frontend {
         email = GetInput.readLine();
          System.out.print("Enter your password: ");
          password = GetInput.readLine();
-         System.out.println(be.validateLogin(email, password));
          if(be.validateLogin(email, password)){
             System.out.println("Login Successful.");
             id = be.getUserTypeID(email);//get the user type to return;
@@ -157,7 +156,7 @@ public class Frontend {
       int opt = 0;
       
       while(opt != 5){
-        System.out.println("Professor Main Menu <3\nOptions:\n1) Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
+        System.out.println("Professor Main Menu <3\nOptions:\n1)Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
@@ -202,7 +201,8 @@ public class Frontend {
         String title = "";
         String abs = ""; //for the full abstract
         String keywords = ""; //abstract without unnecessary words 
-        ArrayList<String> to_block = new ArrayList<String>();  // words we dont need to include 
+        //ArrayList<String> to_block = new ArrayList<String>();  // words we dont need to include 
+        String [] to_block = {"a", "to", "the", "there", "their", "they're", "i"};
 
         boolean first = true; //used to mark first line for title
         boolean second = true; //used to mark second line for authors 
@@ -238,13 +238,21 @@ public class Frontend {
               } else {
                 abs += word; 
                 abs += " ";
+
+                //check for blocked words
+                boolean added = false;
+                for(int i=0; i < to_block.length -1; i++){
+                  if(!word.toLowerCase().contains(to_block[i]) && !added){ //if the word isnt to be blocked
+                    keywords += word;  
+                    keywords += " ";
+                    added = true;
+                  }
+                }          
               }
             }
-          }
-          
+          } 
         }
-        //System.out.println(title);
-        //System.out.println(abs);
+        be.insertAbstract(title, abs, keywords);
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
@@ -320,52 +328,16 @@ public class Frontend {
       //Gather info from the user
       System.out.print("Enter user type\nOptions:\n1 -> professor\n2 -> Student\n3 -> public\nYour selection: ");
       int user_type_ID = GetInput.readLineInt();
-      /*
-      System.out.print("Enter your first name: ");
-      String first_name = GetInput.readLine();
-      System.out.print("Enter your last name: ");
-      String last_name = GetInput.readLine();
-      */
+
       System.out.print("Enter email of the user you want to delete: ");
       String email = GetInput.readLine();
-      /*
-      System.out.print("Enter deparmtent ID: "); //need to make it print out options
-      int department_ID = GetInput.readLineInt();
-      String major = null; 
-      String office_number = null; 
-      String office_hours = null;
-      */
+ 
       if(user_type_ID == 1){ //if professor
-        /*
-        System.out.print("Enter your office number: ");
-        office_number = GetInput.readLine();
-        System.out.print("Enter your office hours: ");
-        office_hours = GetInput.readLine();
-        */
-        
-        /*
-        System.out.print("Do you want to delete a user?");
-        String confirmation = GetInput.readLine();
-        if (confirmation == "yes") {
-           
-        }
-        */
         int ret = be.deleteUser(email);
         System.out.println(ret + "row(s) affected.");
       } else if (user_type_ID == 2){ //if student
-        /*
-        System.out.print("Enter your major: ");
-        major = GetInput.readLine();
-        */
         System.out.println("Student not allowed to delete user");
-        
-      }
-      /*
-      System.out.print("Enter your password: ");
-      String password = GetInput.readLine();
-      */
-
-      
+      }   
     } // end of remove user
     
     

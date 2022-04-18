@@ -155,11 +155,7 @@
          PreparedStatement stmt = conn.prepareStatement("DELETE FROM user where email = ?");
          stmt.setString(1, email);
          numberOfRowsDeleted = stmt.executeUpdate();
-         
-         System.out.println("Records Deleted -> "+numberOfRowsDeleted+"<-");
-      }
-      
-      catch (SQLException sqle) {
+      }catch (SQLException sqle) {
          System.out.println("ERROR IN METHOD deletePassenger()");
          System.out.println("ERROR MESSAGE -> "+sqle);
       }
@@ -205,6 +201,20 @@
       return records;
       } // end of updateUser     
 
+
+   public int insertAbstract(String title, String abs, String keywords){
+      int ret = 0;
+      try{
+         PreparedStatement stmt = conn.prepareStatement("INSERT into Abstract (title, abstract, keywords) VALUES (?, ?, ?)");
+         stmt.setString (1, title);
+         stmt.setString(2, abs);
+         stmt.setString(3, keywords);
+         ret = stmt.executeUpdate(); 
+      }  catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return ret;
+   }
    
       
    
