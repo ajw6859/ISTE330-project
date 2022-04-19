@@ -149,8 +149,22 @@ public class Frontend {
     /**
      * Allows a student to search
      */
-    public void searchByKeyword(){ 
-    
+    public static void searchByKeyword(){
+        System.out.println("Enter up to three keywords or phrases, seperated by comma");
+       
+        Scanner scanner = new Scanner(System.in);  // Create Scanner object
+        String inputString = scanner.nextLine();
+       
+        //split string by comma, remove spaces
+        ArrayList<String> inputStringSplit = new ArrayList<>(Arrays.asList(inputString.split(",[ ]*")));
+       
+        //print out keywords in list
+        for (String a : inputStringSplit){
+            System.out.println(a);
+        }
+       
+        //pass to backend
+        // the list is called inputStringSplit
     }
 
 
@@ -370,6 +384,12 @@ public class Frontend {
 
     
     } // end of update user
+    
+    
+    
+    
+           
+      
 
     /**
      * Used to make the BE call to establish a connection to the DB
@@ -386,6 +406,7 @@ public class Frontend {
       boolean closed = be.close();
       if(closed) {System.out.println("Connection successfully closed.");} else {System.out.println("Error closing connection");}
     }
+    
 
 
     /**
