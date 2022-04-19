@@ -65,10 +65,16 @@ public class Frontend {
         if(password.equals("")){
             password = "student";
         }
-        connect(userName, password, databaseName);    
-        //add a professor and student user for testing purposes 
-        be.insertUser(1, "Jim", "Habermas", "test", "jim.habermas@rit.edu", "0000000000", 1, null, "GOL 2650", "M, W: 3-3:50"); //professor user
-        be.insertUser(2, "Allison", "Wright", "test", "ajw6859@rit.edu", "9782398944", 2, "CSEC", null, null); //student user
+        connect(userName, password, databaseName);  //connect to the db
+
+        //add a professor and student user for testing purposes check if email already exists so no duplicates
+        if(be.getUserTypeID("jim.habermas@rit.edu") == 0){
+          be.insertUser(1, "Jim", "Habermas", "test", "jim.habermas@rit.edu", "0000000000", 1, null, "GOL 2650", "M, W: 3-3:50"); //professor user
+        }
+        if(be.getUserTypeID("ajw6859@rit.edu") == 0){
+          be.insertUser(2, "Allison", "Wright", "test", "ajw6859@rit.edu", "9782398944", 2, "CSEC", null, null); //student user
+        }
+        
 
         int type_ID = login(); //login operates as a loop
 
@@ -201,13 +207,11 @@ public class Frontend {
         String title = "";
         String abs = ""; //for the full abstract
         String keywords = ""; //abstract without unnecessary words 
-        //ArrayList<String> to_block = new ArrayList<String>();  // words we dont need to include 
+        String [] author_names = {}; // used to store author names for the given abstract
         String [] to_block = {"a", "to", "the", "there", "their", "they're", "i"};
 
         boolean first = true; //used to mark first line for title
         boolean second = true; //used to mark second line for authors 
-
-        ArrayList<String> authors = new ArrayList<String>();  // words we dont need to include 
 
         
         while(sc.hasNextLine()){
@@ -222,11 +226,8 @@ public class Frontend {
 
           } else if(second){
             //split authors by comma 
-            String[] temp = data.split(","); //tmp storage for author names.... not rlly important YET
-            /*We can finish implementing this aspect of it after. There are a few 
-             * design quirks we need to figure out in terms of how we want to input 
-             * author information for the associative table.
-            */
+            author_names = data.split(","); //tmp storage for author names
+        
             second = false;
 
           } else {
@@ -252,7 +253,24 @@ public class Frontend {
             }
           } 
         }
+        //Abstract needs to be inserted before association
         be.insertAbstract(title, abs, keywords);
+        int abs_id = be.getAbstractID(abs);
+        System.out.println(abs_id);
+      
+        for(int i=0; i < author_names.length; i++){
+          String [] name = author_names[i].split("\\s+"); //splits name into first and last 
+          String first_name = name[0];
+          String last_name = name[name.length-1];
+          if(first_name.chatAt(0) == ' '){
+            first_name = name[1];
+          }  
+          System.out.println(first_name);
+          System.out.println(last_name);
+          System.out.println(abs_id);
+          int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+          System.out.println(ret + " record(s) inserted");
+        }
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();

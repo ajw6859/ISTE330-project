@@ -215,6 +215,58 @@
       }
       return ret;
    }
+
+   public int getAbstractID(String abs){
+      int result = 0;
+         try{
+            //perform lookup for email
+            PreparedStatement stmt = conn.prepareStatement("SELECT abstract_ID FROM Abstract WHERE abstract=?");
+            stmt.setString(1, abs);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+               result = rs.getInt(1);
+            }
+         } catch(SQLException s){
+            System.out.println("ERROR CONNECTING\n" + s);
+         }
+         return result;
+   }
+
+   public int insertUserToAbstract(int id, String first_name, String last_name){
+      int ret = 0;
+      try{
+         //first lookup the user based on name to get their id 
+         int res = lookupUserByName(first_name, last_name);
+         System.out.println("RES: "+ res);
+         PreparedStatement stmt = conn.prepareStatement("INSERT into User_To_Abstract (user_ID, abstract_ID) VALUES (?, ?)");
+         stmt.setInt(1, res);
+         stmt.setInt(2, id);
+         ret = stmt.executeUpdate(); 
+      }  catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return ret;
+   }
+   
+   public int lookupUserByName(String first_name, String last_name){
+      int result = 0;
+      int pid = 1;
+         try{
+            //perform lookup by first and last name and where the user is a professor 
+            PreparedStatement stmt = conn.prepareStatement("SELECT user_ID FROM User WHERE first_name=? AND last_name=? AND user_type_ID=?");
+            stmt.setString(1, first_name);
+            stmt.setString(2, last_name);
+            stmt.setInt(3, pid);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+               result = rs.getInt(1);
+            }
+         } catch(SQLException s){
+            System.out.println("ERROR CONNECTING\n" + s);
+         }
+         return result;
+   
+   }
    
       
    
