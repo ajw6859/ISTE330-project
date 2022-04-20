@@ -189,7 +189,7 @@ public class Frontend {
         switch(opt){
         case 1: 
           System.out.println("\nYou selected option 1: Add an Abstract.");
-          insertAbstract();
+          insertAbstract(false, 0);
           break;
         case 2: 
           System.out.println("\nYou selected option 2. Edit an Abstract");
@@ -214,7 +214,7 @@ public class Frontend {
     /**
      * Allows a professor to upload an abstract
      */
-    public void insertAbstract(){
+    public void insertAbstract(boolean is_update, int abs_ID){
       try {
         //get file path
         String filepath = "";
@@ -264,9 +264,14 @@ public class Frontend {
               if(word.equals("****")){
                 first = true; second = true; 
                 //insert the abstract 
-                be.insertAbstract(title, abs, keywords);
-                abs_iter.add(abs);
-
+                if(!is_update){ //creates a new entry
+                  int res = be.insertAbstract(title, abs, keywords);
+                  System.out.println(res + " record(s) inserted into the abstract table.");
+                }else { //updates an existing entry
+                  int res = be.updateAbstract(abs_ID, title, abs, keywords);
+                  System.out.println(res + " record updated in the abstract table.");
+                }
+                
                 int abs_id = be.getAbstractID(abs);
                 for(int i=0; i < author_names.length; i++){
                   String [] name = author_names[i].split("\\s+"); //splits name into first and last 
@@ -276,17 +281,19 @@ public class Frontend {
                   if(first_name.charAt(0) == ' '){
                     first_name = name[1];
                   }  
-                  
-                  //need to check if the user is in the db
-                  int ah = be.lookupUserByName(first_name, last_name);
-                  if(ah == 0){
-                    insertUserHelper(first_name, last_name);
-                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
-                    System.out.println(ret + " record(s) inserted");
-                  } else {
-                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
-                    System.out.println(ret + " record(s) inserted");
+                  if(!is_update){
+                    //need to check if the user is in the db
+                    int ah = be.lookupUserByName(first_name, last_name);
+                    if(ah == 0){
+                      insertUserHelper(first_name, last_name);
+                      int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                      System.out.println(ret + " record(s) inserted");
+                    } else {
+                      int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                      System.out.println(ret + " record(s) inserted");
+                    }
                   }
+                  
                 }
                 abs ="";
               } else {
@@ -366,6 +373,9 @@ public class Frontend {
         }
       }
       System.out.print("\n");
+      System.out.print("Enter the ID of the abstract you'd like to modify: ");    
+      int abs_ID = GetInput.readLineInt();
+      insertAbstract(true, abs_ID);
       
     }
 

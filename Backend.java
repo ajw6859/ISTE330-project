@@ -190,10 +190,10 @@
       int records = 0;
       
       try {
-      PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE email = ?"); 
-      stmt.setString(1, major);
-      stmt.setString(2, email); 
-      records = stmt.executeUpdate();
+         PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE email = ?"); 
+         stmt.setString(1, major);
+         stmt.setString(2, email); 
+         records = stmt.executeUpdate();
       } // end of try
       
        catch(SQLException sqle) {
@@ -342,22 +342,23 @@
       return res;
 
    }
-   
 
-   public int getAbstractsByEmail(String email){
-      String [] res = {};
+
+   public int updateAbstract(int abs_ID, String title, String abs, String keywords){
+      int ret = 0;
       try{
-         PreparedStatement stmt = conn.prepareStatement("SELECT abstract_ID, title, abstract FROM abstract JOIN User_To_Abstract USING(abstract_ID) JOIN User USING(user_ID) WHERE user.email=?");
-         stmt.setString(1, email);
-         ResultSet rs = stmt.executeQuery();
-         //if(rs.next()){
-            
-         //}
+         PreparedStatement stmt = conn.prepareStatement("UPDATE Abstract SET title=?, abstract=?, keywords=? WHERE abstract_ID = ?");
+         stmt.setString(1, title);
+         stmt.setString(2, abs);
+         stmt.setString(3, keywords);
+         stmt.setInt(4, abs_ID);
+         ret = stmt.executeUpdate(); 
 
       }catch(SQLException s){
          System.out.println("ERROR CONNECTING\n" + s);
       }
-      return 0;
+
+      return ret;
    }
       
    
