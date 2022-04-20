@@ -190,7 +190,8 @@ public class Frontend {
           updateAbstract();
           break;
         case 3: 
-          System.out.println("You selected option 3.");
+          System.out.println("You selected option 3. Delete an Abstract");
+          removeAbstract();
           break;
         case 4:
           System.out.println("You selected option 4.");
@@ -362,7 +363,14 @@ public class Frontend {
     /**
      * Allows a professor to delete an abstract
      */
-    public boolean deleteAbstract(){return true;}
+    public boolean removeAbstract(){
+      //delete abstract entry from abstract table
+      System.out.println("What abstract entry would you like to delete?");
+      int abstractnum = GetInput.readLineInt();
+      int ret = be.deleteAbstract(abstractnum);
+      System.out.println(ret + " row(s) affected.");
+      return true;
+    }
 
     /**
      * Allows a professor to view prospective matches
@@ -389,7 +397,7 @@ public class Frontend {
       String email = GetInput.readLine();
       System.out.print("Enter your phone: ");
       String phone = GetInput.readLine();
-      System.out.print("Enter deparmtent ID: "); //need to make it print out options
+      System.out.print("Enter department ID: "); //need to make it print out options
       int department_ID = GetInput.readLineInt();
       String major = null; 
       String office_number = null; 

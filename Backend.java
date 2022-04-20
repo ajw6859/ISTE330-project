@@ -161,6 +161,18 @@
       }
       return numberOfRowsDeleted;
    }
+   public int deleteAbstract(int abstract_ID) {
+      int numberOfRowsDeleted = 0;
+      try {
+         PreparedStatement stmt = conn.prepareStatement("DELETE FROM abstract where abstract_ID = ?");
+         stmt.setInt(1, abstract_ID);
+         numberOfRowsDeleted = stmt.executeUpdate();
+      }catch (SQLException sqle) {
+         System.out.println("ERROR IN METHOD deletePassenger()");
+         System.out.println("ERROR MESSAGE -> "+sqle);
+      }
+      return numberOfRowsDeleted;
+   }
    /*
    public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String of) {
       int numberOfRowsUpdated = 0;
