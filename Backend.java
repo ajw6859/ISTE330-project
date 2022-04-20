@@ -361,7 +361,7 @@
       return ret;
    }
    
-   
+   /*
    public ArrayList<String> getInfoFromFaculty(int id) {
         try{
             ArrayList<String> info = new ArrayList<>();
@@ -385,8 +385,59 @@
             return null;
         }
 
-    }
+    }*/
+
+   /**
+    * Used to get connections for a student 
+    */
+   public List<String> getConnections(int uid){
+      List<String> res = new ArrayList<String>();
+      List<Integer> fac_ids = new ArrayList<Integer>();
+      try{
+         //need to first retrieve all faculty id's based on the student uid provided 
+         fac_ids = getFacultyIds(uid);
+         //iterate over all the faculty ids
+         for(int i=0; i < fac_ids.size(); i++){
+            PreparedStatement stmt = conn.prepareStatement("SELECT first_name, last_name, email, cell_phone, office_hours, office_number FROM user JOIN connection ON (user_ID = faculty_ID) WHERE user_ID = ?"); 
+            stmt.setInt(1, fac_ids.get(i));
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+               res.add(rs.getString(1) + " " +rs.getString(2)); //concat first and last name 
+               res.add(rs.getString(3)); //email
+               res.add(rs.getString(4)); //cell_phone
+               res.add(rs.getString(5)); //office hours
+               res.add(rs.getString(6)); //office number
+               //rs.next();
+            }
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+   }
+
+   /**
+    * Used to get faculty id's for a specific student id from the connection table
+    */
+   public List<Integer> getFacultyIds(int uid){
+      List<Integer> res = new ArrayList<Integer>();
+      try{
+         PreparedStatement stmt = conn.prepareStatement("SELECT faculty_ID FROM connection WHERE student_ID = ?"); 
+         stmt.setInt(1, uid);
+         ResultSet rs = stmt.executeQuery();
+         
+         while(rs.next()){
+            res.add(Integer.valueOf(rs.getInt(1)));
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+   }
+
+   }
       
    
    
-}

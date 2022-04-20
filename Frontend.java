@@ -131,18 +131,19 @@ public class Frontend {
       int opt = 0;
       
       while(opt != 5){
-        System.out.println("Student Main Menu <3\nOptions:\n1)Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
+        System.out.println("\nStudent Main Menu <3\nOptions:\n1)Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
         case 1: 
-          System.out.println("You selected option 1.");
+          System.out.println("\nYou selected option 1. Search by Keyword");
           break;
         case 2: 
-          System.out.println("You selected option 2.");
+          System.out.println("\nYou selected option 2. View matches");
+          viewMatchesStudent();
           break;
         case 3: 
-          System.out.println("You selected option 3.");
+          System.out.println("\nYou selected option 3. Connect with a professor");
           break;
         case 4:
           System.out.println("You selected option 4. Have a nice day!");
@@ -156,7 +157,7 @@ public class Frontend {
     /**
      * Allows a student to search
      */
-    public static void searchByKeyword(){
+    public void searchByKeyword(){
         System.out.println("Enter up to three keywords or phrases, seperated by comma");
        
         Scanner scanner = new Scanner(System.in);  // Create Scanner object
@@ -172,6 +173,23 @@ public class Frontend {
        
         //pass to backend
         // the list is called inputStringSplit
+    }
+
+    public void viewMatchesStudent(){
+      //email is stored globally upon login
+      int uid = be.getUserIDByEmail(email); //lookup user by email to get
+      //retrieve conenctions from the db
+      List<String> ret = be.getConnections(uid);
+      for(int i = 0; i < ret.size(); i++){
+        if(i%5== 0){
+          System.out.print("\n"); //print new line to split entries
+          System.out.print(ret.get(i) + " ");
+        } else {
+          System.out.print(ret.get(i)+ " ");
+        }
+       
+      }
+
     }
 
 
@@ -196,7 +214,7 @@ public class Frontend {
           updateAbstract();
           break;
         case 3: 
-          System.out.println("\nYou selected option 3.");
+          System.out.println("\nYou selected option 3. Delete an Abstract");
           break;
         case 4:
           System.out.println("\nYou selected option 4.");
