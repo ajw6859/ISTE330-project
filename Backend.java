@@ -237,7 +237,9 @@
       try{
          //first lookup the user based on name to get their id 
          int res = lookupUserByName(first_name, last_name);
-         System.out.println("RES: "+ res);
+         if(res == 0){
+            return res;
+         }
          PreparedStatement stmt = conn.prepareStatement("INSERT into User_To_Abstract (user_ID, abstract_ID) VALUES (?, ?)");
          stmt.setInt(1, res);
          stmt.setInt(2, id);
@@ -260,14 +262,37 @@
             ResultSet rs = stmt.executeQuery();
             if(rs.next()){
                result = rs.getInt(1);
+            } else {
+               result = 0;
             }
          } catch(SQLException s){
             System.out.println("ERROR CONNECTING\n" + s);
+            return 0;
          }
          return result;
    
    }
    
+
+   public int getAbstractsByEmail(String email){
+      String [] res = {};
+      try{
+         //String [[]]
+         //email to get user_ID
+         //User_ID to get abstract_ID's 
+         //abstract_id's tp get abstract entries 
+         PreparedStatement stmt = conn.prepareStatement("SELECT abstract_ID, title, abstract FROM abstract JOIN User_To_Abstract USING(abstract_ID) JOIN User USING(user_ID) WHERE user.email=?");
+         stmt.setString(1, email);
+         ResultSet rs = stmt.executeQuery();
+         //if(rs.next()){
+            
+         //}
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return 0;
+   }
       
    
    

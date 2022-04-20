@@ -10,11 +10,12 @@ import java.awt.event.*;
 import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.util.Scanner; // Import the Scanner class to read text files
+import java.util.List;
 
 public class Frontend {
 
     public static Font myFontForOutput = new Font("Courier", Font.PLAIN, 32);
-    private String databaseName, userName, password; //can probably make these local
+    private String databaseName, userName, password, email; //can probably make these local
     private Backend be;
 
     /**
@@ -96,7 +97,7 @@ public class Frontend {
      * Used to log users in
      */
     public int login(){
-      String email = "a";
+      //String email = "a";
       String password = "a";
       int id = 0;
       int exit = 1; //for emergency stops? idk if we need this or not 
@@ -182,11 +183,11 @@ public class Frontend {
         switch(opt){
         case 1: 
           System.out.println("You selected option 1: Add an Abstract.");
-          boolean ret = insertAbstract();
+          insertAbstract();
           break;
         case 2: 
           System.out.println("You selected option 2. Edit an Abstract");
-          //boolean ret = 
+          updateAbstract();
           break;
         case 3: 
           System.out.println("You selected option 3.");
@@ -207,7 +208,7 @@ public class Frontend {
     /**
      * Allows a professor to upload an abstract
      */
-    public boolean insertAbstract(){
+    public void insertAbstract(){
       try {
         //get file path
         String filepath = "";
@@ -221,42 +222,75 @@ public class Frontend {
         String title = "";
         String abs = ""; //for the full abstract
         String keywords = ""; //abstract without unnecessary words 
-        String [] author_names = {}; // used to store author names for the given abstract
+        String [] author_names = new String[3]; // used to store author names for the given abstract
+        List<String> abs_iter = new ArrayList<String>(); //used to store abstracts so they can be iterated over for associations
         String [] to_block = {"a", "to", "the", "there", "their", "they're", "i"};
 
         boolean first = true; //used to mark first line for title
         boolean second = true; //used to mark second line for authors 
-
+        boolean inserted = false; //used to denote that 
+        int index = 0;
         
         while(sc.hasNextLine()){
           //read in each line at a time 
           data = sc.nextLine();
-          //System.out.println(data);
 
           //if first line split by "-", "by", and then commas
           if(first){
             title = data;
             first = false;
+            inserted = false; 
 
           } else if(second){
             //split authors by comma 
             author_names = data.split(","); //tmp storage for author names
-        
+            
+            //trim off extra white space 
+            for(int i=0; i < author_names.length; i++){
+              author_names[i] = author_names[i].replaceAll("\n", "").trim();
+              index ++;
+            }
             second = false;
 
           } else {
             //split the given line via whitespace 
             for (String word : data.split("\\s+")){
-              //System.out.println(word);
               if(word.equals("****")){
-                first = true; second = true;
+                first = true; second = true; 
+                //insert the abstract 
+                be.insertAbstract(title, abs, keywords);
+                abs_iter.add(abs);
+
+                int abs_id = be.getAbstractID(abs);
+                for(int i=0; i < author_names.length; i++){
+                  String [] name = author_names[i].split("\\s+"); //splits name into first and last 
+                  
+                  String first_name = name[0];
+                  String last_name = name[name.length-1];
+                  if(first_name.charAt(0) == ' '){
+                    first_name = name[1];
+                  }  
+                  
+                  //need to check if the user is in the db
+                  int ah = be.lookupUserByName(first_name, last_name);
+                  if(ah == 0){
+                    insertUserHelper(first_name, last_name);
+                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                    System.out.println(ret + " record(s) inserted");
+                  } else {
+                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                    System.out.println(ret + " record(s) inserted");
+                  }
+                }
+
+                abs ="";
               } else {
                 abs += word; 
                 abs += " ";
 
-                //check for blocked words
+                //check for blocked words ****needs work but i don't want to rn
                 boolean added = false;
-                for(int i=0; i < to_block.length -1; i++){
+                for(int i=0; i < to_block.length; i++){
                   if(!word.toLowerCase().contains(to_block[i]) && !added){ //if the word isnt to be blocked
                     keywords += word;  
                     keywords += " ";
@@ -266,41 +300,64 @@ public class Frontend {
               }
             }
           } 
-        }
-        //Abstract needs to be inserted before association
-        be.insertAbstract(title, abs, keywords);
-        int abs_id = be.getAbstractID(abs);
-        System.out.println(abs_id);
-      
-        for(int i=0; i < author_names.length; i++){
-          String [] name = author_names[i].split("\\s+"); //splits name into first and last 
-          String first_name = name[0];
-          String last_name = name[name.length-1];
-          if(first_name.chatAt(0) == ' '){
-            first_name = name[1];
-          }  
-          System.out.println(first_name);
-          System.out.println(last_name);
-          System.out.println(abs_id);
-          int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
-          System.out.println(ret + " record(s) inserted");
-        }
+        } // end while  
+          //for each abstract in the file go through and add the association
+          for(String item: abs_iter){
+            
+
+          } 
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
       }
       
-      return true;
     }
-   /*
-    public int editAbstract(){
-      
+
+
+    /**
+     * Used when inserting a user from an abstract
+     */
+    public void insertUserHelper(String first_name, String last_name){
+      System.out.println("User to be added: "+ last_name + ", " + first_name);
+      int user_type_ID = 1;
+      System.out.print("Enter email: ");
+      String email = GetInput.readLine();
+      System.out.print("Enter phone: ");
+      String phone = GetInput.readLine();
+      System.out.print("Enter deparmtent ID: "); //need to make it print out options
+      int department_ID = GetInput.readLineInt();
+      String major = null; 
+      String office_number = null; 
+      String office_hours = null;
+
+      if(user_type_ID == 1){ //if professor
+        System.out.print("Enter office number: ");
+        office_number = GetInput.readLine();
+        System.out.print("Enter office hours: ");
+        office_hours = GetInput.readLine();
+      } else if (user_type_ID == 2){ //if student
+        System.out.print("Enter major: ");
+        major = GetInput.readLine();
+      }
+
+      System.out.print("Enter password: ");
+      String password = GetInput.readLine();
+    
+
+      int ret = be.insertUser(user_type_ID, first_name, last_name, password, email, phone,department_ID, major, office_number, office_hours);
+      System.out.println(ret + "row(s) affected.");
     }
-   */
+
+   
     /**
      * Allows a professor to edit an existing abstract
      */
-    public boolean updateAbstract(){return true;}
+    public void updateAbstract(){
+      //select all abstracts for the current user
+      //String[] tmp = be.getAbstractsByEmail(email);
+      
+      System.out.println("a");
+    }
 
     /**
      * Allows a professor to delete an abstract

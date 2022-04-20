@@ -1,5 +1,5 @@
 BOOKS DATABASE
-Jim Habermas
+Jim Habermas, Test Test
 The project is based on a book database system pertaining to various needs of the user. 
 The basic interface involves querying books according to language, title, author, publisher, ISBN. 
 We support services for buying and selling used books or books used in specific IIT Kanpur courses.
@@ -10,10 +10,11 @@ that book is not found in the library.
 ****
 Test Abstract
 Jim Habermas
-The project is based on a book database system pertaining to various needs of the user. 
+(This one needs to be different). The project is based on a book database system pertaining to various needs of the user. 
 The basic interface involves querying books according to language, title, author, publisher, ISBN. 
 We support services for buying and selling used books or books used in specific IIT Kanpur courses.
 We build a personal profile page which is used for handling the transactions between various students.
 We implement a "recommendation system" for recommending books to be used in a particular course in addition
 to their availability in the library. The system gives advice for cheap used books available at the time, when 
 that book is not found in the library.
+****
