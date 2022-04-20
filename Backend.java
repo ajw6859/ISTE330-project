@@ -360,6 +360,32 @@
 
       return ret;
    }
+   
+   
+   public ArrayList<String> getInfoFromFaculty(int id) {
+        try{
+            ArrayList<String> info = new ArrayList<>();
+             // String query = ??? (don't know what to put here) 
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            System.out.println(preparedStatement);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                info.add(rs.getString(2));
+                info.add(rs.getString(3));
+                info.add(rs.getString(4));
+                info.add(rs.getString(5));
+                info.add(rs.getString(6));
+                info.add(rs.getString(7));
+            }
+            return info;
+        }
+        catch (SQLException sqle) {
+            System.out.println(sqle);
+            return null;
+        }
+
+    }
       
    
    
