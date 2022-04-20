@@ -7,6 +7,7 @@
    import java.sql.*;
    import java.security.MessageDigest;
    import java.security.NoSuchAlgorithmException;
+   import java.util.*;
    public class Backend {
 
       private Connection conn;
@@ -272,15 +273,78 @@
          return result;
    
    }
+
+   /**
+    * Returns the user_ID for the email provided 
+    */
+   public int getUserIDByEmail(String email){
+      int res = 0;
+      try{
+         PreparedStatement stmt = conn.prepareStatement("SELECT user_ID FROM user WHERE user.email=?");
+         stmt.setString(1, email);
+         ResultSet rs = stmt.executeQuery();
+         if(rs.next()){
+            res = rs.getInt(1);
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+   }
+
+   /**
+    * Gets a users abstracts based on the uid provided 
+    */
+   public List<String> getUserAbstracts(int uid){
+      List<String> res = new ArrayList<String>();   //for results
+      int rowCount, size = 0;
+      try{
+         //need to get number of rows to know how many abstracts the user has 
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Abstract JOIN user_to_abstract USING(abstract_ID) WHERE user_ID ="+uid );
+         rs.next();
+         rowCount = rs.getInt(1);
+         
+         //gets all abstracts 
+         PreparedStatement stmtt = conn.prepareStatement("SELECT abstract_ID, title, abstract FROM abstract JOIN user_to_abstract USING(abstract_ID) WHERE user_ID=?");
+         stmtt.setInt(1, uid);
+         ResultSet rss = stmtt.executeQuery();
+         
+         int index = 1;
+         boolean is_int = true;
+         //if values are returned 
+         while(rss.next()){
+            for(int i=0; i < rowCount*3; i++){       
+  
+               if(is_int){ //every third is an int
+                  res.add(String.valueOf(rss.getInt(index)));
+                  is_int = false;
+               } else {
+                  res.add(rss.getString(index));
+               }
+               
+               if(index % 3 == 0){
+                  rss.next();
+                  is_int = true;
+                  index = 1;
+               } else {
+                  index ++;
+               }          
+            }
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+
+   }
    
 
    public int getAbstractsByEmail(String email){
       String [] res = {};
       try{
-         //String [[]]
-         //email to get user_ID
-         //User_ID to get abstract_ID's 
-         //abstract_id's tp get abstract entries 
          PreparedStatement stmt = conn.prepareStatement("SELECT abstract_ID, title, abstract FROM abstract JOIN User_To_Abstract USING(abstract_ID) JOIN User USING(user_ID) WHERE user.email=?");
          stmt.setString(1, email);
          ResultSet rs = stmt.executeQuery();

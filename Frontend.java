@@ -104,8 +104,14 @@ public class Frontend {
       while(exit != 0){ //while the crendtials don't match
         System.out.print("Enter your email: ");
         email = GetInput.readLine();
+        if(email == null){
+          email = "jim.habermas@rit.edu";
+        }
          System.out.print("Enter your password: ");
          password = GetInput.readLine();
+         if(password == null){
+           password = "test";
+         }
          if(be.validateLogin(email, password)){
             System.out.println("Login Successful.");
             id = be.getUserTypeID(email);//get the user type to return;
@@ -177,26 +183,26 @@ public class Frontend {
       int opt = 0;
       
       while(opt != 5){
-        System.out.println("Professor Main Menu <3\nOptions:\n1)Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
+        System.out.println("Professor Main Menu <3\nOptions:\n1)Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit\n");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
         case 1: 
-          System.out.println("You selected option 1: Add an Abstract.");
+          System.out.println("\nYou selected option 1: Add an Abstract.");
           insertAbstract();
           break;
         case 2: 
-          System.out.println("You selected option 2. Edit an Abstract");
+          System.out.println("\nYou selected option 2. Edit an Abstract");
           updateAbstract();
           break;
         case 3: 
-          System.out.println("You selected option 3.");
+          System.out.println("\nYou selected option 3.");
           break;
         case 4:
-          System.out.println("You selected option 4.");
+          System.out.println("\nYou selected option 4.");
           break;
         case 5:
-          System.out.println("You selected option 5. Have a nice day!");
+          System.out.println("\nYou selected option 5. Have a nice day!");
           break;
         default:
           System.out.println("Default triggered");
@@ -282,7 +288,6 @@ public class Frontend {
                     System.out.println(ret + " record(s) inserted");
                   }
                 }
-
                 abs ="";
               } else {
                 abs += word; 
@@ -301,11 +306,6 @@ public class Frontend {
             }
           } 
         } // end while  
-          //for each abstract in the file go through and add the association
-          for(String item: abs_iter){
-            
-
-          } 
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
@@ -353,10 +353,20 @@ public class Frontend {
      * Allows a professor to edit an existing abstract
      */
     public void updateAbstract(){
-      //select all abstracts for the current user
-      //String[] tmp = be.getAbstractsByEmail(email);
+      //boolean first = true;
+      int uid = be.getUserIDByEmail(email); //get current user id 
+      List<String> res = be.getUserAbstracts(uid);
       
-      System.out.println("a");
+      for(int i = 0; i < res.size(); i++){
+        if(i%3 == 0){
+         System.out.print("\n"); //print new line to split entries
+         System.out.println(res.get(i) + " ");
+        }else {
+          System.out.println(res.get(i) + " ");
+        }
+      }
+      System.out.print("\n");
+      
     }
 
     /**
@@ -370,9 +380,24 @@ public class Frontend {
     public void viewMatches(){}
 
     /**
-     * Helper function to format data 
+     * Helper function to format abstraact data 
      */
-    public void formatData(){}
+    public void formatAbstract(String header, List<String> data){
+      boolean first = true;
+      System.out.println(header);
+      for(int i=0; i<data.size(); i++){
+        if(first){
+          System.out.print("        "+data.get(i)+"       ");
+          first = false;
+        } else {
+          System.out.print(data.get(i));
+        }
+        
+        if(i%2 == 0){
+          System.out.println("\n");
+        }
+      }
+    }
 
     /**
      * used to add users to get all info needed to add a user to the db 
@@ -431,6 +456,7 @@ public class Frontend {
     
     
     public void updateUser() {
+
     System.out.println("What is the major you want to change to?");
     String major = GetInput.readLine();
    
@@ -441,11 +467,6 @@ public class Frontend {
 
     
     } // end of update user
-    
-    
-    
-    
-           
       
 
     /**
