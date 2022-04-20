@@ -24,6 +24,8 @@
         */
       public boolean connect(String username, String password, String database){
          url_string += database;
+         url_string = url_string + "?serverTimezone=UTC";
+
          try{
             Class.forName(DEFAULT_DRIVER);
             conn = DriverManager.getConnection(url_string, username, password);
