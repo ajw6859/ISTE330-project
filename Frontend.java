@@ -441,12 +441,40 @@ public class Frontend {
     public void updateUser() {
     System.out.println("What is the major you want to change to?");
     String major = GetInput.readLine();
-   
-    System.out.println("What is the email of the user you are changing the major of?");
+    
+    System.out.println("What is the first name you are changing?");
+    String first_name = GetInput.readLine();
+    
+    System.out.println("What is the last name you are changing?");
+    String last_name = GetInput.readLine();
+    
+    System.out.println("What is the password you are changing to?");
+    String password = GetInput.readLine();
+    
+    System.out.println("What is the new phone number?");
+    String phone = GetInput.readLine();
+    
+    System.out.println("What is the office number you are changing to?");
+    String office_number = GetInput.readLine();
+    
+    System.out.println("What are you changing your office hours to?");
+    String office_hours = GetInput.readLine();
+    
+    
+    System.out.println("What is the email of the user?");
     String email = GetInput.readLine();
    
-    be.updateUser(major, email); 
-
+   
+   if(user_type_ID == 1){ //if professor
+        int ret = be.updateUser(major, first_name, last_name, password, phone, office_number, office_hours,  email); 
+        System.out.println(ret + "row(s) affected.");
+      } else if (user_type_ID == 2){ //if student
+        System.out.println("Student not allowed to update user");
+      }   
+    } // end of update user
+   
+   
+  
     
     } // end of update user
     
