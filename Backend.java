@@ -176,27 +176,7 @@
       }
       return numberOfRowsDeleted;
    }
-   /*
-   public int updateUser(int user_ID, int user_type_ID, String first_name, String last_name, String password, String email, int department_ID, String major, String of) {
-      int numberOfRowsUpdated = 0;
-      JOptionPane.showMessageDialog(null, "Updating a Passenger", "In DataLayer",
-      JOptionPane.PLAIN_MESSAGE);
-      try {
-         PreparedStatement stmt = conn.prepareStatement("UPDATE passenger SET street = ? WHERE passengerID = ?");
-         stmt.setInt(2, passengerID);
-         stmt.setString(1, streetAddress);
-         numberOfRowsUpdated = stmt.executeUpdate();
-         
-         System.out.println("Records Updated -> "+numberOfRowsUpdated+"<-");
-      }
-      
-      catch (SQLException sqle) {
-         System.out.println("ERROR IN METHOD updatePassenger()");
-         System.out.println("ERROR MESSAGE -> "+sqle);
-      }
-      return numberOfRowsUpdated;
-   }
-   */
+   
    
       public int updateUser(String major, String email) {
       int records = 0;
