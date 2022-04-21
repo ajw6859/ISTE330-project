@@ -13,6 +13,7 @@
       private Connection conn;
       private String url_string = "jdbc:mysql://localhost/";
       private final String DEFAULT_DRIVER = "com.mysql.cj.jdbc.Driver";
+      private int current_user_ID;
 
       /**
        * Constructor --> shouldn't do anything here i don't think
@@ -47,8 +48,11 @@
          return (conn == null);
       }
 
-      public boolean login(){
-         return true;
+      /**
+       * used to set the userid for the user who is currently logged in
+       */
+      public void setSessionUserID(String email){
+         current_user_ID = getUserIDByEmail(email);
       }
 
       public int insertUser(int user_type_ID, String first_name, String last_name, String password, String email, String phone, int department_ID, String major, String office_number, String office_hours){
@@ -135,7 +139,7 @@
       /**
        * Gets the user type for a user that we already know exists 
        */
-      public int getUserTypeID(String email  ){
+      public int getUserTypeID(String email){
          int result = 0;
          try{
             //perform lookup for email
@@ -177,7 +181,6 @@
       return numberOfRowsDeleted;
    }
    
-   
       public int updateUser(String major, String first_name, String last_name, String password, String phone, String office_number, String office_hours,  String email) {
       int records = 0;
       
@@ -194,7 +197,7 @@
          records = stmt.executeUpdate();
       } // end of try
       
-       catch(SQLException sqle) {
+         catch(SQLException sqle) {
          System.out.println("Error --->" + sqle); 
       } // end of sql exception 
       
@@ -359,31 +362,199 @@
       return ret;
    }
    
-   /*
-   public ArrayList<String> getInfoFromFaculty(int id) {
-        try{
-            ArrayList<String> info = new ArrayList<>();
-             // String query = ??? (don't know what to put here) 
-            PreparedStatement preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setInt(1, id);
-            System.out.println(preparedStatement);
-            rs = preparedStatement.executeQuery();
-            while (rs.next()) {
-                info.add(rs.getString(2));
-                info.add(rs.getString(3));
-                info.add(rs.getString(4));
-                info.add(rs.getString(5));
-                info.add(rs.getString(6));
-                info.add(rs.getString(7));
-            }
-            return info;
-        }
-        catch (SQLException sqle) {
-            System.out.println(sqle);
-            return null;
-        }
 
-    }*/
+
+   /**
+    * Called when a student searches for specific keywords
+    */
+   public void searchByKeyword(List<String> keywords){
+      //add keywords to the lookup table 
+      addKeywords(keywords);
+
+      //retrieve professor abstracts that contain that keyword
+      scanAbstracts(keywords);
+      //NOTE: the above method call is like a chain reaction that sets everything off
+
+   }
+
+
+   /**
+    * Used to add keywords to the DB based on what was searched 
+    */
+   public void addKeywords(List<String> keywords){
+      List<String> to_block = new ArrayList<String>(); // words to be blocked 
+      to_block = populateToBlock();
+      //remove bad keywords that shouldn't be added to the db 
+      for(int i=0; i <keywords.size(); i++){
+         for(int j=0; j < to_block.size(); j++){
+            if(keywords.get(i).toLowerCase().equals(to_block.get(j).toLowerCase())){
+               keywords.remove(i);
+            }
+         }
+         //check that the keyword isn't already in the db 
+         int exists = lookup_keyword(keywords.get(i));
+         if(exists == 0){
+            int ret = 0;
+            //insert each of the keywords into the db
+            try {
+               PreparedStatement stmt = conn.prepareStatement("INSERT into Lookup_Keyword (keyword_type) VALUES (?)");
+               stmt.setString(1, keywords.get(i));
+               ret = stmt.executeUpdate();
+               System.out.println("Keyword inserted.");
+            } catch(SQLException s){
+               System.out.println("ERROR CONNECTING\n" + s);
+            }
+         }
+      }
+   }
+
+   /**
+    * gets the keyword id based on the provided keyword
+    * can be used to prevent duplicate keywords being inserted
+    */
+   public int lookup_keyword(String keyword){
+      int res = 0;
+      try{
+         PreparedStatement stmt = conn.prepareStatement("SELECT keyword_ID FROM Lookup_Keyword WHERE keyword_type = ?");
+         stmt.setString(1, keyword);
+         ResultSet rs = stmt.executeQuery();
+         if(rs.next()){
+            res = rs.getInt(1);
+         }
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+   }
+
+   /**
+    * Used to scan exisiting abstracts for the list of keywords provided 
+    */
+   public void scanAbstracts(List<String> keywords){
+      int rowCount = 0;
+      try{
+         //get the total number of abstracts in the database
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Abstract");
+         rs.next();
+         rowCount = rs.getInt(1);
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      //for each keyword in the list 
+      for(int i=0; i < keywords.size(); i++){
+         for(int j=rowCount; j > 0; j--){
+            String abs = getAbstract(j); //retrieve one abstract at a time 
+            containsWord(abs, keywords.get(i)); //check if the abstract and keyword match
+         }
+      }
+   }
+
+   /**
+    * Returns an abstact based on its id
+    */
+   public String getAbstract(int id){
+      String res = "";
+      try{
+         PreparedStatement stmt = conn.prepareStatement("SELECT abstract FROM Abstract WHERE abstract_ID= ?");
+         stmt.setInt(1, id);
+         ResultSet rs = stmt.executeQuery();
+         if(rs.next()){
+            res = rs.getString(1);
+         }
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+      return res;
+   
+   }
+
+   /**
+    * Used to check if an absrtact contains a specific keyword
+    */
+   public void containsWord( String abs, String keyword){
+      //split the abstract by space and remove puncuation 
+      String [] split = abs.split("\\s+"); //split the abstract by space 
+      for(int i=0; i<split.length; i++){
+         //make lowercase and remove any puctuation
+         String word = split[i].toLowerCase().replaceAll("\\p{Punct}", "");
+         
+         //if the word in the abs is the same as the word 
+         if(keyword.equals(word)){    
+            //create a connection between the professor for the given abstract and the student user who is logged in       
+            insertConnection(abs, keyword); 
+         }
+      }
+   }
+
+   public void insertConnection(String abs, String keyword){
+      int abs_ID = getAbstractID(abs);
+      int [] fac_IDs =  getFacultyIDsForAbstract(abs_ID); //get all faculty id's based on the abstract id
+      int keyword_ID = lookup_keyword(keyword);
+      if(keyword_ID != 0){ //non zero means it exists
+         //check that the connection doesn't already exist FOR EACH AUTHOR AH
+         for(int i=0; i < fac_IDs.length; i++){
+            int fac_ID;
+            if(fac_IDs[i] != 0){
+               fac_ID = fac_IDs[i];
+            } else {return;}
+            
+            int exists = 1; // used to check if there is already an exisiting association 
+            try{
+               PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Connection WHERE faculty_ID=? AND student_ID=? and keyword_ID=?"); 
+               stmt.setInt(1, fac_ID);
+               stmt.setInt(2, current_user_ID);
+               stmt.setInt(3, keyword_ID);
+               ResultSet rs = stmt.executeQuery();
+               if(!rs.next()){ //if there isn't something returned ?
+                  exists = 0;
+               }
+
+            }catch(SQLException s){
+               System.out.println("ERROR CONNECTING\n" + s);
+            }
+            
+            if(exists == 0){ //insert new conenction 
+               int ret = 0;
+               try{
+                  PreparedStatement stmt = conn.prepareStatement("INSERT into Connection (faculty_ID, student_ID, keyword_ID) VALUES (?, ?, ?)");
+                  stmt.setInt(1, fac_ID);
+                  stmt.setInt(2, current_user_ID);
+                  stmt.setInt(3, keyword_ID);
+                  ret = stmt.executeUpdate(); 
+               }  catch(SQLException s){
+                  System.out.println("ERROR CONNECTING\n" + s);
+               }
+               System.out.println(ret + "record(s) inserted."); // sanity check 
+            } 
+
+         }
+      }
+   
+   }
+
+   /**
+    * used to retrieve faculty id's based on the abstract_id
+    */
+   public int[] getFacultyIDsForAbstract(int abs_ID){
+      int[] ids = new int[3]; //only up to 3 authors 
+      int index = 0; //used to know where to set the next element in the array
+      try{
+         PreparedStatement stmt = conn.prepareStatement("SELECT user_ID from User_To_Abstract WHERE abstract_ID = ?"); 
+         stmt.setInt(1, abs_ID);
+         ResultSet rs = stmt.executeQuery();
+         while(rs.next()){
+            ids[index] = rs.getInt(1);
+            index++;           
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }      
+      return ids;
+
+   }
+
 
    /**
     * Used to get connections for a student 
@@ -433,6 +604,18 @@
          System.out.println("ERROR CONNECTING\n" + s);
       }
       return res;
+   }
+
+   /**
+    * used to filter out words that should be blocked so that they 
+    * are not added as keywords
+    * may need to be added on to idk
+    */
+   public List<String> populateToBlock(){
+      List<String> ret = new ArrayList<String>();
+      ret.add("the"); ret.add("is"); ret.add("on"); ret.add("a"); ret.add("the"); ret.add("to");
+      ret.add("we");ret.add("be"); ret.add("or"); ret.add("This"); ret.add("There");
+      return ret;
    }
 
    }

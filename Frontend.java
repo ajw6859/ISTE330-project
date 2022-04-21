@@ -109,6 +109,7 @@ public class Frontend {
          if(be.validateLogin(email, password)){
             System.out.println("Login Successful.");
             id = be.getUserTypeID(email);//get the user type to return;
+            be.setSessionUserID(email); //used to store the user id on the be
             exit = 0;
             break;
          }
@@ -124,13 +125,14 @@ public class Frontend {
     public void mainMenuStudent(){
       int opt = 0;
       
-      while(opt != 5){
-        System.out.println("Student Main Menu <3\nOptions:\n1)Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
+      while(opt != 4){
+        System.out.println("\nStudent Main Menu <3\nOptions:\n1)Search by keyword/phrase\n2)View matches\n3)Connect\n4)Exit");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
         case 1: 
-          System.out.println("You selected option 1.");
+          System.out.println("\nYou selected option 1. Search by Keyword");
+          searchByKeyword();
           break;
         case 2: 
           System.out.println("You selected option 2.");
@@ -150,22 +152,25 @@ public class Frontend {
     /**
      * Allows a student to search
      */
-    public static void searchByKeyword(){
-        System.out.println("Enter up to three keywords or phrases, seperated by comma");
-       
-        Scanner scanner = new Scanner(System.in);  // Create Scanner object
-        String inputString = scanner.nextLine();
-       
-        //split string by comma, remove spaces
-        ArrayList<String> inputStringSplit = new ArrayList<>(Arrays.asList(inputString.split(",[ ]*")));
-       
-        //print out keywords in list
-        for (String a : inputStringSplit){
-            System.out.println(a);
+    public void searchByKeyword(){
+      List<String> keywords = new ArrayList<String>(); //used to store keywords/phrases entered 
+      System.out.print("Enter up to three keywords or phrases, seperated by a comma: ");
+      String input = GetInput.readLine();
+      String [] tmp = input.split(","); //tmp array for words and phrase split by comma
+
+      //loop over each element and split by space to furthur divide words 
+      for(int i=0; i < tmp.length; i++){
+        tmp[i] = tmp[i].replaceAll("\n", "").trim(); //remove trailing and leading whitespace
+        //System.out.println(tmp[i]);
+        String [] split = tmp[i].split("\\s+"); //split by phrase bc we have to seach every word entered //
+        for(int j=0; j < split.length; j++){
+          //System.out.println(split[j]);
+          keywords.add(split[j].toLowerCase());
         }
-       
-        //pass to backend
-        // the list is called inputStringSplit
+      }
+      //pass to backend
+      be.searchByKeyword(keywords);
+
     }
 
 
