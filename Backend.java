@@ -178,13 +178,19 @@
    }
    
    
-      public int updateUser(String major, String email) {
+      public int updateUser(String major, String first_name, String last_name, String password, String phone, String office_number, String office_hours,  String email) {
       int records = 0;
       
       try {
-         PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ? WHERE email = ?"); 
+         PreparedStatement stmt = conn.prepareStatement("UPDATE User set major = ?, first_name = ?, last_name = ?, password = ?, phone = ?, office_number = ?, office_hours = ?  WHERE email = ?"); 
          stmt.setString(1, major);
-         stmt.setString(2, email); 
+         stmt.setString(2, first_name);
+         stmt.setString(3, last_name);
+         stmt.setString(4, password);
+         stmt.setString(5, phone);
+         stmt.setString(6, office_number);
+         stmt.setString(7, office_hours);
+         stmt.setString(8, email); 
          records = stmt.executeUpdate();
       } // end of try
       
@@ -192,8 +198,8 @@
          System.out.println("Error --->" + sqle); 
       } // end of sql exception 
       
-      System.out.println("# of records affected -->" + records);
-      return records;
+      return records; 
+      
       } // end of updateUser     
 
 
