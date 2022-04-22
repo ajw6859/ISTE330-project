@@ -618,6 +618,61 @@
       return ret;
    }
 
+
+   /**
+    * Used to retrieve conenctions from the db 
+    */
+   public void viewMatches(int type_ID){
+      //based on the type_ID of the user, search for the appropriate ID in the connection table 
+      List<Integer> res = new ArrayList<Integer>();
+      if(type_ID == 1){ //if professor 
+         System.out.println("MATCHES\n______________________________________________________");   //header  
+         try{
+            //select student first_name, last_name, email, major, keywords in common 
+            //user to connection to keywords
+            //first get the user data
+            PreparedStatement stmt = conn.prepareStatement("SELECT user_ID, first_name, last_name, email, cell_phone FROM User JOIN Connection ON(User.user_ID = Connection.student_ID) WHERE faculty_ID = ?"); 
+            stmt.setInt(1, current_user_ID);
+            ResultSet rs = stmt.executeQuery();
+            
+            //for each row in the db that is returned we will need to scan for the necesarry keyword_types that 
+            //correspond with the appropriate keyword type
+            while(rs.next()){
+               System.out.println(rs.getString(3) + ", " + rs.getString(2) + " | " + rs.getString(4) + " | " + rs.getString(5));
+               getConenctionKeywords(current_user_ID, rs.getInt(1));
+            }
+
+         }catch(SQLException s){
+            System.out.println("ERROR CONNECTING\n" + s);
+         }
+
+      } else if(type_ID == 2){ // if student 
+         System.out.println("student");
+      } else {
+         System.out.println("No type ID found.");
+      }
+      //return res;
+   }
+
+   public void getConenctionKeywords(int faculty_ID, int student_ID){
+      try{
+         //select keyword type 
+         PreparedStatement stmt = conn.prepareStatement("SELECT keyword_type FROM Lookup_Keyword JOIN Connection USING(keyword_ID) WHERE faculty_ID = ? AND student_ID = ?"); 
+         stmt.setInt(1, faculty_ID);
+         stmt.setInt(2, student_ID);
+         ResultSet rs = stmt.executeQuery();
+         
+         //for each row returned there will be a keyword associated 
+         while(rs.next()){
+            System.out.print("\tKeywords: "+ rs.getString(1) + " ");
+         }
+
+      }catch(SQLException s){
+         System.out.println("ERROR CONNECTING\n" + s);
+      }
+
+   }
+
    }
       
    

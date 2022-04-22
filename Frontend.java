@@ -183,7 +183,7 @@ public class Frontend {
       int opt = 0;
       
       while(opt != 5){
-        System.out.println("Professor Main Menu <3\nOptions:\n1)Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
+        System.out.println("\n\nProfessor Main Menu <3\nOptions:\n1)Add an abstract\n2)Edit an abstract\n3)Delete an abstract\n4)View macthes\n5)Exit");
         System.out.print("Selection: ");
         opt = GetInput.readLineInt();
         switch(opt){
@@ -200,7 +200,8 @@ public class Frontend {
           removeAbstract();
           break;
         case 4:
-          System.out.println("You selected option 4.");
+          System.out.println("You selected option 4. View Matches");
+          viewMatches();
           break;
         case 5:
           System.out.println("You selected option 5. Have a nice day!");
@@ -394,23 +395,13 @@ public class Frontend {
 
     /**
      * Allows a professor to view prospective matches
-     
+     */
     public void viewMatches(){
-    
-    for (int i = 0; i < keywords.length; i++) { 
-    
-    if (keywords[i] = "") {
-    
-    
-    
-    } // end of if statement
-    
-    } // end of for loop
-
-    
-    
+      //to view match you would send user type id 
+      //NOTE: The current user ID is stored globally on the backend upon login 
+      be.viewMatches(type_ID);
     }
-    */
+  
 
 
     /**
