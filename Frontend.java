@@ -17,6 +17,7 @@ public class Frontend {
     public static Font myFontForOutput = new Font("Courier", Font.PLAIN, 32);
     private String databaseName, userName, password, email; //can probably make these local
     private Backend be;
+    private int type_ID;
 
     /**
      * Constructor initializes FE GUI and BE connection
@@ -77,7 +78,7 @@ public class Frontend {
         }
         
 
-        int type_ID = login(); //login operates as a loop
+        type_ID = login(); //login operates as a loop
 
         //main menu calls
         if(type_ID == 1){ //is professor 
@@ -188,7 +189,7 @@ public class Frontend {
         switch(opt){
         case 1: 
           System.out.println("You selected option 1: Add an Abstract.");
-          insertAbstract();
+          insertAbstract(false, 0);
           break;
         case 2: 
           System.out.println("You selected option 2. Edit an Abstract");
@@ -211,10 +212,10 @@ public class Frontend {
 
     }
 
-    /**
+/**
      * Allows a professor to upload an abstract
      */
-    public void insertAbstract(){
+    public void insertAbstract(boolean is_update, int abs_ID){
       try {
         //get file path
         String filepath = "";
@@ -264,9 +265,14 @@ public class Frontend {
               if(word.equals("****")){
                 first = true; second = true; 
                 //insert the abstract 
-                be.insertAbstract(title, abs, keywords);
-                abs_iter.add(abs);
-
+                if(!is_update){ //creates a new entry
+                  int res = be.insertAbstract(title, abs, keywords);
+                  System.out.println(res + " record(s) inserted into the abstract table.");
+                }else { //updates an existing entry
+                  int res = be.updateAbstract(abs_ID, title, abs, keywords);
+                  System.out.println(res + " record updated in the abstract table.");
+                }
+                
                 int abs_id = be.getAbstractID(abs);
                 for(int i=0; i < author_names.length; i++){
                   String [] name = author_names[i].split("\\s+"); //splits name into first and last 
@@ -276,19 +282,20 @@ public class Frontend {
                   if(first_name.charAt(0) == ' '){
                     first_name = name[1];
                   }  
-                  
-                  //need to check if the user is in the db
-                  int ah = be.lookupUserByName(first_name, last_name);
-                  if(ah == 0){
-                    insertUserHelper(first_name, last_name);
-                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
-                    System.out.println(ret + " record(s) inserted");
-                  } else {
-                    int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
-                    System.out.println(ret + " record(s) inserted");
+                  if(!is_update){
+                    //need to check if the user is in the db
+                    int ah = be.lookupUserByName(first_name, last_name);
+                    if(ah == 0){
+                      insertUserHelper(first_name, last_name);
+                      int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                      System.out.println(ret + " record(s) inserted");
+                    } else {
+                      int ret = be.insertUserToAbstract(abs_id, first_name, last_name);
+                      System.out.println(ret + " record(s) inserted");
+                    }
                   }
+                  
                 }
-
                 abs ="";
               } else {
                 abs += word; 
@@ -307,11 +314,6 @@ public class Frontend {
             }
           } 
         } // end while  
-          //for each abstract in the file go through and add the association
-          for(String item: abs_iter){
-            
-
-          } 
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
@@ -359,10 +361,23 @@ public class Frontend {
      * Allows a professor to edit an existing abstract
      */
     public void updateAbstract(){
-      //select all abstracts for the current user
-      //String[] tmp = be.getAbstractsByEmail(email);
+      //boolean first = true;
+      int uid = be.getUserIDByEmail(email); //get current user id 
+      List<String> res = be.getUserAbstracts(uid);
       
-      System.out.println("a");
+      for(int i = 0; i < res.size(); i++){
+        if(i%3 == 0){
+         System.out.print("\n"); //print new line to split entries
+         System.out.println(res.get(i) + " ");
+        }else {
+          System.out.println(res.get(i) + " ");
+        }
+      }
+      System.out.print("\n");
+      System.out.print("Enter the ID of the abstract you'd like to modify: ");    
+      int abs_ID = GetInput.readLineInt();
+      insertAbstract(true, abs_ID);
+      
     }
 
     /**
@@ -444,49 +459,40 @@ public class Frontend {
     
     
     public void updateUser() {
-    System.out.println("What is the major you want to change to?");
-    String major = GetInput.readLine();
+      System.out.println("What is the major you want to change to?");
+      String major = GetInput.readLine();
+      
+      System.out.println("What is the first name you are changing?");
+      String first_name = GetInput.readLine();
+      
+      System.out.println("What is the last name you are changing?");
+      String last_name = GetInput.readLine();
+      
+      System.out.println("What is the password you are changing to?");
+      String password = GetInput.readLine();
+      
+      System.out.println("What is the new phone number?");
+      String phone = GetInput.readLine();
+      
+      System.out.println("What is the office number you are changing to?");
+      String office_number = GetInput.readLine();
+      
+      System.out.println("What are you changing your office hours to?");
+      String office_hours = GetInput.readLine();
+      
+      
+      System.out.println("What is the email of the user?");
+      String email = GetInput.readLine();
     
-    System.out.println("What is the first name you are changing?");
-    String first_name = GetInput.readLine();
     
-    System.out.println("What is the last name you are changing?");
-    String last_name = GetInput.readLine();
-    
-    System.out.println("What is the password you are changing to?");
-    String password = GetInput.readLine();
-    
-    System.out.println("What is the new phone number?");
-    String phone = GetInput.readLine();
-    
-    System.out.println("What is the office number you are changing to?");
-    String office_number = GetInput.readLine();
-    
-    System.out.println("What are you changing your office hours to?");
-    String office_hours = GetInput.readLine();
-    
-    
-    System.out.println("What is the email of the user?");
-    String email = GetInput.readLine();
-   
-   
-   if(user_type_ID == 1){ //if professor
+      if(type_ID == 1){ //if professor
         int ret = be.updateUser(major, first_name, last_name, password, phone, office_number, office_hours,  email); 
         System.out.println(ret + "row(s) affected.");
-      } else if (user_type_ID == 2){ //if student
+      } else if (type_ID == 2){ //if student
         System.out.println("Student not allowed to update user");
-      }   
-    } // end of update user
-   
-   
-  
+      } 
     
     } // end of update user
-    
-    
-    
-    
-           
       
 
     /**
