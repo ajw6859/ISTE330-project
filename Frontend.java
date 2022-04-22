@@ -394,8 +394,24 @@ public class Frontend {
 
     /**
      * Allows a professor to view prospective matches
-     */
-    public void viewMatches(){}
+     
+    public void viewMatches(){
+    
+    for (int i = 0; i < keywords.length; i++) { 
+    
+    if (keywords[i] = "") {
+    
+    
+    
+    } // end of if statement
+    
+    } // end of for loop
+
+    
+    
+    }
+    */
+
 
     /**
      * Helper function to format data 
