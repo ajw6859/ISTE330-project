@@ -385,11 +385,24 @@ public class Frontend {
      * Allows a professor to delete an abstract
      */
     public boolean removeAbstract(){
+      int uid = be.getUserIDByEmail(email); //get current user id 
+      List<String> res = be.getUserAbstracts(uid);
+      
+      for(int i = 0; i < res.size(); i++){
+        if(i%3 == 0){
+         System.out.print("\n"); //print new line to split entries
+         System.out.println(res.get(i) + " ");
+        }else {
+          System.out.println(res.get(i) + " ");
+        }
+      }
+      System.out.print("\n");
+
       //delete abstract entry from abstract table
-      System.out.println("What abstract entry would you like to delete?");
+      System.out.print("Enter the ID of the abstract you'd like to delete: ");  
       int abstractnum = GetInput.readLineInt();
       int ret = be.deleteAbstract(abstractnum);
-      System.out.println(ret + " row(s) affected.");
+      System.out.println(ret + " row(s) deleted.");
       return true;
     }
 
