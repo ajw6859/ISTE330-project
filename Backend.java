@@ -639,7 +639,7 @@
             //correspond with the appropriate keyword type
             while(rs.next()){
                System.out.println(rs.getString(3) + ", " + rs.getString(2) + " | " + rs.getString(4) + " | " + rs.getString(5));
-               getConenctionKeywords(current_user_ID, rs.getInt(1));
+               getConnectionKeywords(current_user_ID, rs.getInt(1));
             }
 
          }catch(SQLException s){
@@ -647,14 +647,33 @@
          }
 
       } else if(type_ID == 2){ // if student 
-         System.out.println("student");
+         System.out.println("Student: MATCHES\n______________________________________________________");
+         try {
+         // select professor first_name, last_name, email, major, keywords in common 
+         PreparedStatement stmt = conn.prepareStatement("SELECT first_name, last_name, email, cell_phone, department_ID, office_number, office_hours FROM User JOIN Connection ON(User.user_ID = Connection.faculty_ID) WHERE student_ID = ?");
+         stmt.setInt(2, current_user_ID);
+         ResultSet rs = stmt.executeQuery();
+         
+         while(rs.next()) {
+         System.out.println(rs.getString(2) + ", " + rs.getString(1) + " | " + rs.getString(3) + " | " + rs.getString(4) + " | " + rs.getString(5) + " | " + rs.getString(6) + " | " + rs.getString(7));
+         getConnectionKeywords(current_user_ID, rs.getInt(2));  
+         
+         } // end of while  
+        
+         
+         } // end of try 
+         
+         catch (SQLException s) {
+            System.out.println("ERROR CONNECTING\n" + s); 
+         } // end of catch
+         
       } else {
          System.out.println("No type ID found.");
       }
-      //return res;
+      // return res;
    }
 
-   public void getConenctionKeywords(int faculty_ID, int student_ID){
+   public void getConnectionKeywords(int faculty_ID, int student_ID){
       try{
          //select keyword type 
          PreparedStatement stmt = conn.prepareStatement("SELECT keyword_type FROM Lookup_Keyword JOIN Connection USING(keyword_ID) WHERE faculty_ID = ? AND student_ID = ?"); 
