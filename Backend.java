@@ -651,11 +651,11 @@
          try {
          // select professor first_name, last_name, email, major, keywords in common 
          PreparedStatement stmt = conn.prepareStatement("SELECT first_name, last_name, email, cell_phone, department_ID, office_number, office_hours FROM User JOIN Connection ON(User.user_ID = Connection.faculty_ID) WHERE student_ID = ?");
-         stmt.setInt(2, current_user_ID);
+         stmt.setInt(1, current_user_ID);
          ResultSet rs = stmt.executeQuery();
          
          while(rs.next()) {
-         System.out.println(rs.getString(2) + ", " + rs.getString(1) + " | " + rs.getString(3) + " | " + rs.getString(4) + " | " + rs.getString(5) + " | " + rs.getString(6) + " | " + rs.getString(7));
+         System.out.println(rs.getString(2) + ", " + rs.getString(1) + " | " + rs.getString(3) + " | " + rs.getString(4) + " | " + rs.getString(5) + " | " + rs.getString(6) + " | " + rs.getString(7)); 
          getConnectionKeywords(current_user_ID, rs.getInt(2));  
          
          } // end of while  
