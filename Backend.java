@@ -650,13 +650,13 @@
          System.out.println("Student: MATCHES\n______________________________________________________");
          try {
          // select professor first_name, last_name, email, major, keywords in common 
-         PreparedStatement stmt = conn.prepareStatement("SELECT first_name, last_name, email, cell_phone, department_ID, office_number, office_hours FROM User JOIN Connection ON(User.user_ID = Connection.faculty_ID) WHERE student_ID = ?");
+         PreparedStatement stmt = conn.prepareStatement("SELECT user_ID, first_name, last_name, email, cell_phone, department_ID, office_number, office_hours FROM User JOIN Connection ON(User.user_ID = Connection.faculty_ID) WHERE student_ID = ?");
          stmt.setInt(1, current_user_ID);
          ResultSet rs = stmt.executeQuery();
          
          while(rs.next()) {
-         System.out.println(rs.getString(2) + ", " + rs.getString(1) + " | " + rs.getString(3) + " | " + rs.getString(4) + " | " + rs.getString(5) + " | " + rs.getString(6) + " | " + rs.getString(7)); 
-         getConnectionKeywords(current_user_ID, rs.getInt(2));  
+         System.out.println(rs.getString(3) + ", " + rs.getString(2) + " | " + rs.getString(4) + " | " + rs.getString(5) + " | " + rs.getInt(6) + " | " + rs.getString(7) + " | " + rs.getString(8)); 
+         getConnectionKeywords(rs.getInt(1), current_user_ID);  
          
          } // end of while  
         
@@ -683,7 +683,7 @@
          
          //for each row returned there will be a keyword associated 
          while(rs.next()){
-            System.out.print("\tKeywords: "+ rs.getString(1) + " ");
+            System.out.println("\tKeywords: "+ rs.getString(1) + " ");
          }
 
       }catch(SQLException s){

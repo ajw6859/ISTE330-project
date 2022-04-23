@@ -136,10 +136,11 @@ public class Frontend {
           searchByKeyword();
           break;
         case 2: 
-          System.out.println("You selected option 2.");
+          System.out.println("You selected option 2. View matches");
+          viewMatches();
           break;
         case 3: 
-          System.out.println("You selected option 3.");
+          System.out.println("You selected option 3. Connect");
           break;
         case 4:
           System.out.println("You selected option 4. Have a nice day!");
